@@ -165,6 +165,33 @@ and was not resolved by replacing the complete speaker
 assembly and wiring harness.
 
 The Linux fix successfully restores the left woofer, which
+
+## Technical investigation
+
+### Approaches tested
+
+Before arriving at the final working configuration,
+several alternative approaches were investigated:
+
+- Setting the ALSA model parameter to `alienware`.
+- Applying HDA commands during system startup.
+- Applying HDA commands after the audio services started.
+- Introducing fixed startup delays.
+- Waiting for the default PipeWire audio sink to become available.
+- Reapplying the HDA commands at timed intervals.
+- Disabling HDA runtime power saving.
+
+None of these approaches alone provided a reliable,
+persistent solution.
+
+The significant discovery was that HDA node `0x17`
+could return to its disabled state during user session
+switching, even with HDA runtime power saving disabled.
+
+This led to the development of the state-aware watcher,
+which restores the output whenever the pin is detected
+in a disabled state, rather than relying on predicted
+startup timings.
 has remained stable since 30 September 2026.
 
 It has not been possible to verify both woofer channels on
