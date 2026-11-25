@@ -1,0 +1,9 @@
+#!/bin/sh
+
+case "$1" in
+    post)
+        sleep 2
+        /usr/bin/hda-verb /dev/snd/hwC1D0 0x17 0x707 0x40
+        /usr/bin/hda-verb /dev/snd/hwC1D0 0x17 0x300 0xa000
+        ;;
+esac
