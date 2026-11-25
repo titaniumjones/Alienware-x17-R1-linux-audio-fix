@@ -1,0 +1,14 @@
+#!/bin/sh
+
+CODEC_FILE="/proc/asound/card1/codec#0"
+HDA_DEV="/dev/snd/hwC1D0"
+
+while true
+do
+    if ! grep -A12 'Node 0x17' "$CODEC_FILE" | grep -q 'Pin-ctls: 0x40: OUT'; then
+        sudo /usr/bin/hda-verb "$HDA_DEV" 0x17 0x707 0x40
+        sudo /usr/bin/hda-verb "$HDA_DEV" 0x17 0x300 0xa000
+    fi
+
+    sleep 1
+done
