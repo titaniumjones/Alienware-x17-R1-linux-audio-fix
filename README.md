@@ -30,6 +30,21 @@ The working configuration consists of three parts:
 3. Disable HDA runtime power saving, because it can reset node `0x17` back to a disabled state after login or idle.
 
 ### 1. Test the woofer path manually
+Before applying the fix, identify the sound card containing the Realtek ALC289 codec:
+
+```bash
+grep -H '^Codec:' /proc/asound/card*/codec*
+```
+
+On the test machine, the relevant output is:
+
+```text
+/proc/asound/card1/codec#0:Codec: Realtek ALC289
+```
+
+This corresponds to the hardware device `/dev/snd/hwC1D0`.
+
+ALSA sound card numbering may differ between machines. If your ALC289 codec is assigned a different card or codec number, adjust the device paths throughout this guide accordingly.
 
 The woofer path can be enabled manually with:
 
@@ -65,17 +80,36 @@ Pin-ctls: 0x00:
 
 ### Make the fix persistent
 
-The manual `hda-verb` commands change the codec state immediately, but that state is not guaranteed to persist across login, reboot or suspend/resume.
+### Make the fix persistent
 
-There is also a second problem: HDA runtime power saving can reset pin `0x17` back to its disabled state after the fix has been applied.
+The manual `hda-verb` commands change the codec state immediately,
+but that state is not guaranteed to persist across login, reboot,
+user switching or suspend/resume.
 
-The permanent workaround therefore needs to:
+HDA runtime power saving can cause pin `0x17` to return to its
+disabled state. However, testing established that the pin can
+also be reset during user session changes, even with HDA runtime
+power saving disabled.
 
-- reapply the two `hda-verb` commands automatically after the audio system starts;
-- reapply them after suspend/resume;
-- disable HDA runtime power saving so that the working codec state is not subsequently reset.
+Several approaches based on startup delays and audio service
+readiness were tested but did not provide a reliable solution.
 
-An installation script is provided to configure these changes automatically.
+The final working solution uses a state-aware watcher that
+monitors HDA node `0x17` once per second. If the output pin is
+no longer enabled, the watcher automatically reapplies the two
+`hda-verb` commands.
+
+The persistent configuration consists of:
+
+- A watcher script that monitors and restores the woofer output.
+- A systemd user service that starts and supervises the watcher.
+- Restricted sudo permissions for the two required HDA commands.
+- A suspend/resume hook that restores the woofer output.
+- A configuration file that disables HDA runtime power saving.
+
+This configuration has been in continuous everyday use on the
+test machine since 30 September 2026 and was confirmed stable
+on 25 November 2026.
 
 ### Install the persistent fix
 
@@ -90,3 +124,16 @@ The installer configures the automatic woofer fix, disables HDA runtime power sa
 Reboot the computer when the installer has finished.
 
 After reboot, play some bass-heavy music and confirm that the woofers are still working without manually running the `hda-verb` commands.
+
+## Known limitations
+
+The test machine has a pre-existing fault affecting the right
+woofer. This fault is present under both Windows and Linux
+and was not resolved by replacing the complete speaker
+assembly and wiring harness.
+
+The Linux fix successfully restores the left woofer, which
+has remained stable since 30 September 2026.
+
+It has not been possible to verify both woofer channels on
+a machine with fully functioning audio hardware.
