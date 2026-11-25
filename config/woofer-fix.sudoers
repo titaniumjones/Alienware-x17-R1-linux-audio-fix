@@ -1,0 +1,2 @@
+YOUR_USERNAME ALL=(root) NOPASSWD: /usr/bin/hda-verb /dev/snd/hwC1D0 0x17 0x707 0x40
+YOUR_USERNAME ALL=(root) NOPASSWD: /usr/bin/hda-verb /dev/snd/hwC1D0 0x17 0x300 0xa000
