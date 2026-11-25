@@ -125,6 +125,24 @@ Reboot the computer when the installer has finished.
 
 After reboot, play some bass-heavy music and confirm that the woofers are still working without manually running the `hda-verb` commands.
 
+## Tested configuration
+
+- Hardware: Alienware x17 R1
+- Operating system: Linux Mint 22.3
+- Kernel: 7.0.0-44-generic
+- Audio stack: ALSA, PipeWire and WirePlumber
+- Last tested: 25 November 2026
+
+The persistent fix has been in everyday use since
+30 September 2026 without reported recurrence of
+the original audio problem.
+
+Both the installation and uninstallation scripts
+were successfully tested on 25 November 2026.
+
+Compatibility with other Linux distributions and
+hardware configurations has not yet been verified.
+
 ## Known limitations
 
 The test machine has a pre-existing fault affecting the right
