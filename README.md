@@ -80,8 +80,6 @@ Pin-ctls: 0x00:
 
 ### Make the fix persistent
 
-### Make the fix persistent
-
 The manual `hda-verb` commands change the codec state immediately,
 but that state is not guaranteed to persist across login, reboot,
 user switching or suspend/resume.
@@ -124,6 +122,22 @@ The installer configures the automatic woofer fix, disables HDA runtime power sa
 Reboot the computer when the installer has finished.
 
 After reboot, play some bass-heavy music and confirm that the woofers are still working without manually running the `hda-verb` commands.
+
+### Uninstall the fix
+
+To remove the persistent audio workaround, run:
+
+```bash
+sudo ./uninstall.sh
+```
+
+Reboot the computer to complete the removal.
+
+The uninstaller removes all five configuration components,
+disables the systemd user service and rebuilds the initramfs.
+
+It does not remove any installed packages or restore
+pre-existing configuration files overwritten during installation.
 
 ## Tested configuration
 
