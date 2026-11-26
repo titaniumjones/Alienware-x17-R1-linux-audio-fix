@@ -196,3 +196,31 @@ has remained stable since 30 September 2026.
 
 It has not been possible to verify both woofer channels on
 a machine with fully functioning audio hardware.
+
+### Left and right woofer channels
+
+The final parameter of the HDA amplifier command determines
+which output channel is unmuted:
+
+| Parameter | Function |
+|-----------|----------|
+| `0xa000` | Unmute left output channel |
+| `0x9000` | Unmute right output channel |
+| `0xb000` | Unmute both output channels |
+
+The current implementation uses `0xa000`, which has been
+successfully tested on the left woofer.
+
+On a machine with two functioning woofers, the following
+command should unmute both output channels:
+
+```bash
+sudo hda-verb /dev/snd/hwC1D0 0x17 0x300 0xb000
+```
+
+Due to the existing right-woofer hardware fault on the test
+machine, the audible result of enabling both channels could
+not be verified.
+
+Feedback from owners with fully functioning speaker hardware
+would be particularly welcome.
